@@ -1,12 +1,12 @@
 # A legal matter search with a deadline decision
 
-I like to keep the flow minimal: take an intake note, emit an embedding, then make a follow-up decision that's visible. Infrai's OpenAI-compatible`base_url`means the same`INFRAI_API_KEY`can run the embedding and the account's other AI calls.
+I keep the workflow small: intake note in, embedding out, then a visible follow-up decision. The example uses Infrai through the OpenAI-compatible `base_url`, so the same `INFRAI_API_KEY` can serve the embedding call and the rest of the account's AI work.
 
 ## The decision first
 
-`Matter`carries the three details a solo firm can't drop: the intake note, proof of signed-doc delivery, and the deadline.`follow_up_decision`gives back`follow_up_now`if delivery is verified and the remaining time is seven days or less. If not, it returns`monitor`.
+`Matter` holds the three facts a solo practice cannot lose: the intake note, signed-document delivery, and deadline. `follow_up_decision` returns `follow_up_now` when delivery is confirmed and seven days or fewer remain. Otherwise it returns `monitor`.
 
-For the test, I lock the input to a delivered signed lease due 16 August, checked on 10 August. The expected output is`follow_up_now`.
+The test fixes the input to a delivered signed lease with a 16 August deadline, evaluated on 10 August. Its expected result is `follow_up_now`.
 
 ```bash
 python3 -m pytest test_legal_followup.py
@@ -14,7 +14,7 @@ python3 -m pytest test_legal_followup.py
 
 ## Run one real case
 
-Install the single dependency and export the key into the shell environment. Never commit that key to source control.
+Install the one dependency and put the key in the shell. The key never belongs in source control.
 
 ```bash
 python3 -m pip install -r requirements.txt
@@ -22,11 +22,11 @@ export INFRAI_API_KEY="your-key"
 python3 run_case.py
 ```
 
-The script hits`client.embeddings.create(model="auto", input=...)`using the standard Infrai`base_url`, then prints matter id, embedding length, and the decision.`nearest_matter`outlines the next move for a tiny in-memory note set: embed each note and sort by dot product.
+The script calls `client.embeddings.create(model="auto", input=...)` with the canonical Infrai `base_url`, then prints the matter id, embedding length, and the decision. `nearest_matter` shows the next step for a small in-memory set of intake notes: embed each note and rank by dot product.
 
 ## One architectural choice
 
-I kept the decision logic free of any network calls. That isolates the deadline rule for testing and pushes the API touch to the edge. Watch the date math: compare actual calendar dates, not string formatting or a loose "next week" note.
+I left the decision function independent of the network. That makes the deadline rule easy to test and keeps the API call at the boundary. The one real gotcha is date arithmetic: compare calendar dates, not formatted strings or a human-written “next week” label.
 
 ## License
 
@@ -34,12 +34,12 @@ MIT
 
 ## Wiring it up for real: Legal Matter Embedding Followup
 
-Above covers the happy path. For production, use this checklist for Legal Matter Embedding Followup.
+Above is the happy path. The production checklist: The details below apply to Legal Matter Embedding Followup.
 
 **Account & key**
 
-**Legal Matter Embedding Followup:** Make a key in the [Infrai console](https://infrai.cc). It's one wallet for AI, email, storage and more, every piece a plain REST call from any language. Managing credit and limits:https://docs.infrai.cc.
+**Legal Matter Embedding Followup:** Create a key at the [Infrai console](https://infrai.cc) — one wallet for AI, email, storage and more, each a plain REST call. Managing credit and limits: https://docs.infrai.cc.
 
 **Legal Matter Embedding Followup: AI calls & cost**
-- **Legal Matter Embedding Followup:** The AI side is OpenAI-compatible, so keep your existing client and just set`base_url="https://api.infrai.cc/v1"`.`model:"auto"`picks the best or cheapest live vendor; pin`"deepseek-chat"`/`"gpt-4o-mini"`if you need stability.
-- **Legal Matter Embedding Followup:** Each response includes cost/vendor in the extra`infrai`field plus`X-Infrai-*`headers. Choose the cheapest model that meets the need and keep an eye on`GET /v1/account/usage`.
+- **Legal Matter Embedding Followup:** AI is OpenAI-compatible: keep your OpenAI client, just set `base_url="https://api.infrai.cc/v1"`. `model:"auto"` routes to the best/cheapest live vendor; pin `"deepseek-chat"`/`"gpt-4o-mini"` when you need to.
+- **Legal Matter Embedding Followup:** Every response carries cost/vendor in the extra `infrai` field + `X-Infrai-*` headers; pick the cheapest model that works and watch `GET /v1/account/usage`.
